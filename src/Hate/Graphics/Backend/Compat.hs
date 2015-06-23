@@ -48,7 +48,11 @@ renderBatch ds = mapM_ (\xs -> renderPipelineBatch (pipeline . head $ xs) xs) $ 
 renderPipelineBatch :: PipelineDescription -> [DrawRequest] -> Action ()
 renderPipelineBatch p ds = do
     pip <- case p of
-        SolidColorPipeline _ -> gets solidColorPipeline -- todo set up a proper solid color
+        SolidColorPipeline color -> do
+            pip <- gets solidColorPipeline -- todo set up a proper solid color
+            liftIO $ activatePipeline pip
+            liftIO $ GL.uni
+            return pip
         TexturingPipeline texId -> do
             pip <- gets texturingPipeline 
             liftIO $ activatePipeline pip
